@@ -1,0 +1,66 @@
+<div class="p-6" *ngIf="distributorId; else loginMsg">
+
+  <h1 class="text-3xl font-bold mb-6">Distributor Dashboard</h1>
+
+  <!-- STATS -->
+  <div class="grid md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-white p-4 rounded-xl shadow border">
+      <p class="text-sm text-gray-500">Total Distributor Earnings</p>
+      <p class="text-2xl font-bold text-green-700">₹{{ totalDistributorEarnings }}</p>
+    </div>
+
+    <div class="bg-white p-4 rounded-xl shadow border">
+      <p class="text-sm text-gray-500">Live Orders</p>
+      <p class="text-2xl font-bold text-green-700">{{ liveOrders.length }}</p>
+    </div>
+
+    <div class="bg-white p-4 rounded-xl shadow border">
+      <p class="text-sm text-gray-500">Order History</p>
+      <p class="text-2xl font-bold text-green-700">{{ historyOrders.length }}</p>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="flex gap-3 mb-6">
+    <button
+      *ngFor="let t of tabs"
+      (click)="onTabChange(t)"
+      class="px-4 py-2 rounded-lg text-sm font-medium"
+      [ngClass]="tab === t ? 'bg-green-600 text-white' : 'bg-gray-200'">
+      {{ t }}
+    </button>
+  </div>
+
+  <!-- BATCHES -->
+  <ng-container *ngIf="tab === 'BATCHES'">
+
+    <h2 class="text-xl font-semibold mb-4">Pending Batches</h2>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+      <app-batch-card
+        *ngFor="let b of pendingBatches"
+        [batch]="b"
+        (approve)="approveBatch($event)"
+        (reject)="rejectBatch($event)"
+        (trace)="goToTrace($event)">
+      </app-batch-card>
+    </div>
+
+    <h2 class="text-xl font-semibold mb-4">Approved Batches</h2>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <app-batch-card
+        *ngFor="let b of approvedBatches"
+        [batch]="b"
+        [readOnly]="true"
+        (trace)="goToTrace($event)">
+      </app-batch-card>
+    </div>
+
+  </ng-container>
+
+</div>
+
+<ng-template #loginMsg>
+  <p class="text-center mt-10">Login as distributor</p>
+</ng-template>

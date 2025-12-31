@@ -1,0 +1,85 @@
+<!-- DO NOT RENDER IF INVALID -->
+<ng-container *ngIf="!isInvalid">
+
+  <div
+    class="group bg-white rounded-2xl shadow-sm hover:shadow-lg transition
+           overflow-hidden w-full max-w-[300px] border border-gray-200"
+  >
+
+    <!-- IMAGE -->
+    <div class="relative aspect-[16/10] overflow-hidden">
+      <img
+        [src]="imageUrl"
+        [alt]="batch.cropType || 'Crop'"
+        class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+        (error)="onImageError($event)"
+      />
+
+      <!-- STATUS -->
+      <span
+        class="absolute top-2 right-2 bg-emerald-500 text-white
+               text-[11px] px-2 py-0.5 rounded-full shadow"
+      >
+        {{ batch.status }}
+      </span>
+
+      <!-- TITLE -->
+      <div class="absolute bottom-2 left-2 text-white">
+        <p class="text-sm font-semibold flex items-center gap-1">
+          🌿 {{ batch.cropType || 'OTHER' }}
+        </p>
+        <p class="text-xs opacity-90">
+          {{ batch.totalQuantity || 0 }} kg available
+        </p>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="p-3 space-y-2 text-sm text-gray-700">
+
+      <div class="flex justify-between items-center">
+        <p class="font-semibold text-green-700">
+          ₹{{ batch.price ?? '—' }} <span class="text-xs text-gray-500">/kg</span>
+        </p>
+        <p class="text-xs text-gray-500">
+          📍 {{ batch.location || '—' }}
+        </p>
+      </div>
+
+      <div class="text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full w-fit">
+        ⭐ Quality Check Passed
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="flex gap-2 pt-2">
+
+        <!-- APPROVE / REJECT -->
+        <ng-container *ngIf="!readOnly">
+          <button
+            (click)="onApprove()"
+            class="flex-1 bg-green-600 hover:bg-green-700
+                   text-white py-2 rounded-xl text-sm font-medium">
+            Approve
+          </button>
+
+          <button
+            (click)="onReject()"
+            class="flex-1 bg-red-500 hover:bg-red-600
+                   text-white py-2 rounded-xl text-sm font-medium">
+            Reject
+          </button>
+        </ng-container>
+      </div>
+
+      <!-- TRACE -->
+      <button
+        (click)="onTrace()"
+        class="w-full mt-2 bg-blue-600 hover:bg-blue-700
+               text-white py-2 rounded-xl text-sm font-medium">
+        Trace Batch
+      </button>
+    </div>
+
+  </div>
+
+</ng-container>

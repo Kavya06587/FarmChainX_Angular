@@ -1,0 +1,144 @@
+<div class="p-6">
+
+ <div class="p-6">
+
+  <!-- Stats Overview -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-white rounded-lg shadow p-4">
+      <h3 class="text-sm font-medium text-gray-500">Total Products</h3>
+      <p class="text-2xl font-bold text-gray-900">{{ totalProducts }}</p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-4">
+      <h3 class="text-sm font-medium text-gray-500">Active Listings</h3>
+      <p class="text-2xl font-bold text-gray-900">{{ activeListingsCount }}</p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-4">
+      <h3 class="text-sm font-medium text-gray-500">Total Revenue</h3>
+      <p class="text-2xl font-bold text-gray-900">--</p>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="flex gap-3 mb-6 flex-wrap">
+    <button
+      (click)="showAddCropModal = true"
+      class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+      + Add New Crop
+    </button>
+
+    <button
+      (click)="showBatchManagement = true"
+      class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+      🧺 Manage Batches
+    </button>
+
+    <button
+      [routerLink]="['/marketplace']"
+      class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+      Browse Marketplace
+    </button>
+  </div>
+
+  <!-- Crops Table -->
+  <div class="bg-white rounded-lg shadow overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-semibold text-gray-900">Your Crops</h2>
+    </div>
+
+    @if (loading) {
+      <div class="p-8 text-center">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <p class="mt-2 text-gray-600">Loading crops...</p>
+      </div>
+    }
+    @else if (crops.length === 0) {
+      <div class="p-8 text-center">
+        <p class="text-gray-500">No crops added yet.</p>
+        <button
+          (click)="showAddCropModal = true"
+          class="mt-2 text-blue-600 hover:text-blue-800">
+          Add your first crop →
+        </button>
+      </div>
+    }
+    @else {
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Crop</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody class="bg-white divide-y divide-gray-200">
+            @for (crop of crops; track trackByCropId($index, crop)) {
+              <tr>
+                <td class="px-6 py-4">
+                  <div class="text-sm font-medium text-gray-900">{{ crop.cropName }}</div>
+                  <div class="text-sm text-gray-500">{{ crop.cropType }}</div>
+                </td>
+
+                <td class="px-6 py-4">
+                  {{ crop.quantity }} {{ crop.unit }}
+                </td>
+
+                <td class="px-6 py-4">
+                  @if (crop.listed) {
+                    <span class="px-2 inline-flex text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                      Listed
+                    </span>
+                  } @else {
+                    <span class="px-2 inline-flex text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                      Not Listed
+                    </span>
+                  }
+                </td>
+
+                <td class="px-6 py-4 text-sm font-medium">
+                  @if (!crop.listed) {
+                    <button
+                      (click)="openListing(crop)"
+                      class="text-blue-600 hover:text-blue-900 mr-3">
+                      List
+                    </button>
+                  }
+                  <button class="text-gray-600 hover:text-gray-900">
+                    View
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+  <!-- Modals -->
+  @if (showListingModal) {
+    <app-listing-modal
+      [crop]="selectedCrop"
+      (close)="showListingModal = false"
+      (success)="onListingSuccess($event)" />
+  }
+
+  @if (showAddCropModal) {
+    <app-add-crop-modal
+      (close)="showAddCropModal = false"
+      (success)="onCropAdded()" />
+  }
+
+  @if (showBatchManagement) {
+  <app-batch-management
+    [user]="auth.user"
+    (close)="showBatchManagement = false">
+  </app-batch-management>
+}
+
+
+</div>

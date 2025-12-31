@@ -1,0 +1,37 @@
+<h2 class="text-2xl font-bold mb-6">🌱 Crops</h2>
+
+<div *ngIf="loading">Loading crops...</div>
+
+<table *ngIf="!loading" class="w-full bg-white rounded shadow">
+  <thead class="bg-gray-100">
+    <tr>
+      <th class="p-3 text-left">Name</th>
+      <th class="p-3">Type</th>
+      <th class="p-3">Qty</th>
+      <th class="p-3">Price</th>
+      <th class="p-3">Batch</th>
+      <th class="p-3">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let c of crops" class="border-t">
+      <td class="p-3">{{ c.cropName }}</td>
+      <td class="p-3">{{ c.cropType }}</td>
+      <td class="p-3">{{ c.quantity }}</td>
+      <td class="p-3">₹{{ c.price }}</td>
+      <td class="p-3 font-mono">{{ c.batchId }}</td>
+      <td class="p-3">
+        <a
+          *ngIf="c.batchId"
+          class="text-blue-600 mr-3"
+          [routerLink]="['/trace', c.batchId]"
+          target="_blank">
+          Trace
+        </a>
+        <button class="text-red-600" (click)="deleteCrop(c.cropId)">
+          Delete
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,108 @@
+<div class="min-h-screen bg-gray-50 p-6">
+
+  <!-- HEADER -->
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-3xl font-bold">🌾 Marketplace</h1>
+      <p class="text-gray-600">
+        Buy fresh, traceable products directly from farmers
+      </p>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="bg-white rounded-xl shadow p-4 mb-6 grid grid-cols-1 md:grid-cols-5 gap-4">
+    <input
+      type="text"
+      placeholder="Search crop..."
+      [(ngModel)]="search"
+      class="border rounded px-3 py-2 md:col-span-2"
+    />
+
+    <input
+      type="number"
+      placeholder="Min ₹"
+      [(ngModel)]="minPrice"
+      class="border rounded px-3 py-2"
+    />
+
+    <input
+      type="number"
+      placeholder="Max ₹"
+      [(ngModel)]="maxPrice"
+      class="border rounded px-3 py-2"
+    />
+
+    <select
+      [(ngModel)]="sortBy"
+      class="border rounded px-3 py-2"
+    >
+      <option value="">Sort</option>
+      <option value="PRICE_ASC">Price ↑</option>
+      <option value="PRICE_DESC">Price ↓</option>
+      <option value="QTY_ASC">Qty ↑</option>
+      <option value="QTY_DESC">Qty ↓</option>
+    </select>
+  </div>
+
+  <!-- LOADING -->
+  <div *ngIf="loading" class="text-center text-gray-500">
+    Loading Marketplace...
+  </div>
+
+  <!-- PRODUCTS GRID -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+    <p *ngIf="!loading && filteredProducts.length === 0"
+       class="col-span-full text-center text-gray-500">
+      No active listings
+    </p>
+
+    <div
+      *ngFor="let p of filteredProducts"
+      class="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
+
+      <!-- IMAGE -->
+      <div class="relative h-40 mb-3">
+        <img
+          [src]="getImageUrl(p.cropImageUrl)"
+          (error)="onImageError($event)"
+          class="h-full w-full object-cover rounded-lg"
+          alt="Crop Image"
+        />
+      </div>
+
+      <!-- INFO -->
+      <div>
+        <h2 class="text-lg font-semibold">{{ p.cropName }}</h2>
+        <p class="text-sm text-gray-500">Farmer: {{ p.farmerId }}</p>
+        <p class="mt-1 text-xl font-bold text-green-700">
+          ₹{{ p.price }} / kg
+        </p>
+        <p class="text-sm text-gray-500">
+          Available: {{ p.quantity }} kg
+        </p>
+
+        <span
+          class="inline-block mt-1 text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full">
+          Grade {{ p.qualityGrade }}
+        </span>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="mt-4 space-y-2">
+        <button
+          class="w-full border border-green-600 text-green-600 py-2 rounded hover:bg-green-50"
+          (click)="buyNow(p)">
+          Buy Now
+        </button>
+
+        <button
+          class="w-full text-sm text-gray-500 hover:text-green-700"
+          (click)="openTrace(p.traceUrl)">
+          🌱 Trace Origin
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
