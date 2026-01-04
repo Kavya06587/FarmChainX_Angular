@@ -48,7 +48,7 @@ export class AIAssistantComponent {
 
     console.log('🚀 Requesting AI for:', cropName);
 
-    this.aiService.getCropInfo(cropName).subscribe({
+    this.aiService.getFarmingGuide(cropName).subscribe({
       next: (res) => {
         console.log('📦 Response:', res);
         this.response = res;

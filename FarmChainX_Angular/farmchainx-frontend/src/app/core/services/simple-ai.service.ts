@@ -14,7 +14,7 @@ export class SimpleAIService {
   
   constructor(private http: HttpClient) { }
   
-  getCropInfo(cropName: string): Observable<any> {
+ getFarmingGuide(cropName: string): Observable<any> {
     console.log('🌱 Getting AI info for:', cropName);
     
     const headers = new HttpHeaders({
@@ -159,7 +159,7 @@ IMPORTANT RULES:
     const validatedData: any = {};
     
     for (const field of requiredFields) {
-      if (data[field] && data[field].trim() !== '') {
+     if (data[field] && typeof data[field] === 'string' && data[field].trim() !== '') {
         validatedData[field] = data[field];
       } else {
         // Provide intelligent defaults based on crop type

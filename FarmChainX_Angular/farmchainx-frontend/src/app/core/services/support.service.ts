@@ -10,19 +10,26 @@ export interface TicketMessage {
   senderRole: string;
   message: string;
   isAdminResponse: boolean;
+  visibleTo: 'ADMIN' | 'REPORTER' | 'REPORTED_AGAINST';
+
   createdAt: string;
 }
 
 export interface Ticket {
-  id: number;                 // DB ID (Long)
+  id: number;                 // DB ID
   ticketId: string;           // TKT-xxxx
   subject: string;
   description: string;
   status: 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
   priority: string;
   issueType: string;
+
   reportedById: string;
   reportedByRole: string;
+
+  reportedAgainstId?: string | null;
+  reportedAgainstRole?: string | null;
+
   createdAt: string;
   messages?: TicketMessage[];
 }

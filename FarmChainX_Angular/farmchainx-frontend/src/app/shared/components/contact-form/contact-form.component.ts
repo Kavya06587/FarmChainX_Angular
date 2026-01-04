@@ -110,7 +110,7 @@ handleSubmit(): void {
     reportedById: this.userId,
     reportedByRole: this.userType.toUpperCase(),
     reportedAgainstId: this.formData.reportedAgainstId || null,
-    reportedAgainstType: this.formData.reportedAgainstType || null,
+    reportedAgainstRole: this.formData.reportedAgainstType || null,
     issueType: this.formData.issueType,
     subject: this.formData.subject,
     description: this.formData.description,

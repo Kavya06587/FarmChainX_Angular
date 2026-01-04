@@ -34,6 +34,9 @@ public class TicketMessage {
     private boolean isAdminResponse = false;
     private LocalDateTime createdAt;
     
+    @Column(nullable = false)
+    private String visibleTo;
+    
     // Constructors
     public TicketMessage() {
         this.createdAt = LocalDateTime.now();
@@ -94,5 +97,13 @@ public class TicketMessage {
     
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+    
+    public String getVisibleTo() {
+        return visibleTo;
+    }
+
+    public void setVisibleTo(String visibleTo) {
+        this.visibleTo = visibleTo;
     }
 }

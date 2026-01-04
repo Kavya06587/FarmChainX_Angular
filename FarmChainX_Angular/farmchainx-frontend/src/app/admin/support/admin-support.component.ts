@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { SupportService, Ticket } from '../../core/services/support.service';
+import { SupportService, Ticket, TicketMessage } from '../../core/services/support.service';
 
 type TicketTab = 'all' | 'OPEN' | 'IN_PROGRESS' | 'RESOLVED';
+type ConversationTarget = 'REPORTER' | 'REPORTED_AGAINST';
 
 @Component({
   selector: 'app-admin-support',
@@ -24,6 +25,9 @@ export class AdminSupportComponent implements OnInit {
   tabs: readonly TicketTab[] = ['all', 'OPEN', 'IN_PROGRESS', 'RESOLVED'];
   activeTab: TicketTab = 'all';
 
+  /** 🔥 Which conversation admin is currently viewing */
+  activeConversation: ConversationTarget = 'REPORTER';
+
   constructor(private support: SupportService) {}
 
   ngOnInit(): void {
@@ -31,20 +35,16 @@ export class AdminSupportComponent implements OnInit {
     this.loadStats();
   }
 
-  /* ---------- LOADERS ---------- */
+  /* ================= LOADERS ================= */
 
   loadTickets(): void {
     this.loading = true;
-
     this.support.getAllTickets().subscribe({
       next: res => {
-        const list: Ticket[] = res?.tickets ?? [];
-        console.log('✅ ADMIN TICKETS:', list);
-
-        this.tickets = list;
+        this.tickets = res?.tickets ?? [];
         this.applyFilter();
       },
-      complete: () => this.loading = false
+      complete: () => (this.loading = false)
     });
   }
 
@@ -54,16 +54,13 @@ export class AdminSupportComponent implements OnInit {
     });
   }
 
-  /* ---------- FILTER ---------- */
+  /* ================= FILTER ================= */
 
   applyFilter(): void {
-    if (this.activeTab === 'all') {
-      this.filteredTickets = [...this.tickets];
-    } else {
-      this.filteredTickets = this.tickets.filter(
-        t => t.status === this.activeTab
-      );
-    }
+    this.filteredTickets =
+      this.activeTab === 'all'
+        ? [...this.tickets]
+        : this.tickets.filter(t => t.status === this.activeTab);
   }
 
   setTab(tab: TicketTab): void {
@@ -71,10 +68,11 @@ export class AdminSupportComponent implements OnInit {
     this.applyFilter();
   }
 
-  /* ---------- DETAILS ---------- */
+  /* ================= DETAILS ================= */
 
   selectTicket(ticket: Ticket): void {
     this.selectedTicket = ticket;
+    this.activeConversation = 'REPORTER'; // default
 
     this.support.getTicketMessages(ticket.id).subscribe(res => {
       this.selectedTicket!.messages = res?.messages ?? [];
@@ -90,6 +88,20 @@ export class AdminSupportComponent implements OnInit {
     });
   }
 
+  /* ================= CONVERSATION SWITCH ================= */
+
+  contactReporter(): void {
+    this.activeConversation = 'REPORTER';
+    this.message = '';
+  }
+
+  contactReportedUser(): void {
+    this.activeConversation = 'REPORTED_AGAINST';
+    this.message = '';
+  }
+
+  /* ================= SEND MESSAGE ================= */
+
   sendMessage(): void {
     if (!this.message.trim() || !this.selectedTicket) return;
 
@@ -99,16 +111,30 @@ export class AdminSupportComponent implements OnInit {
       senderId: admin.id || '1',
       senderRole: 'ADMIN',
       message: this.message,
-      isAdminResponse: true
+      isAdminResponse: true,
+
+      /** 🔥 THIS is what backend understands */
+      visibleTo: this.activeConversation
     };
 
-    this.support
-      .addMessageToTicket(this.selectedTicket.id, payload)
+    this.support.addMessageToTicket(this.selectedTicket.id, payload)
       .subscribe(() => {
         this.message = '';
         this.selectTicket(this.selectedTicket!);
       });
   }
+
+  /* ================= MESSAGE FILTER ================= */
+
+  get visibleMessages(): TicketMessage[] {
+    if (!this.selectedTicket?.messages) return [];
+
+    return this.selectedTicket.messages.filter(m =>
+      m.visibleTo === 'ADMIN' || m.visibleTo === this.activeConversation
+    );
+  }
+
+  /* ================= HELPERS ================= */
 
   formatDate(date: string): string {
     return new Date(date).toLocaleString();
