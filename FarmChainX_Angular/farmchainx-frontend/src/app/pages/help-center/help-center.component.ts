@@ -46,51 +46,115 @@ export class HelpCenterComponent implements OnInit {
     });
   }
 
-  /* ---------------- DATA ---------------- */
+  /* ---------------- CATEGORIES ---------------- */
 
   helpCategories = [
-    { id: 'getting-started', title: 'Getting Started', bgColor: 'bg-blue-50', description: 'Account setup & basics' },
-    { id: 'marketplace', title: 'Marketplace', bgColor: 'bg-green-50', description: 'Buying & selling crops' },
-    { id: 'traceability', title: 'Traceability', bgColor: 'bg-purple-50', description: 'Track farm to table' },
-    { id: 'payments', title: 'Payments', bgColor: 'bg-yellow-50', description: 'Billing & payouts' }
+    {
+      id: 'getting-started',
+      title: 'Getting Started',
+      description: 'Account & basics'
+    },
+    {
+      id: 'farmer',
+      title: 'Farmer Support',
+      description: 'Selling crops & AI help'
+    },
+    {
+      id: 'buyer',
+      title: 'Buyer Support',
+      description: 'Buying & tracking produce'
+    },
+    {
+      id: 'admin',
+      title: 'Admin Support',
+      description: 'Platform management'
+    }
   ];
 
+  /* ---------------- FAQs ---------------- */
+
   faqs: Record<string, FAQ[]> = {
+
     'getting-started': [
       {
         id: 'gs-1',
         question: 'How do I create an account?',
-        answer: 'Click Sign Up → Choose role → Verify email → Complete profile.',
-        tags: ['account', 'signup']
+        answer: 'Click Sign Up, choose your role, verify email, and complete your profile.',
+        tags: ['signup', 'account']
+      },
+      {
+        id: 'gs-2',
+        question: 'Can I change my role later?',
+        answer: 'No. Roles are fixed to maintain data integrity.',
+        tags: ['role']
       }
     ],
-    'marketplace': [
+
+    'farmer': [
       {
-        id: 'mp-1',
-        question: 'How do I list products?',
-        answer: 'Go to dashboard → Add product → Publish.',
-        tags: ['listing', 'sell']
+        id: 'farmer-1',
+        question: 'How do I list my crops?',
+        answer: 'Go to Dashboard → Marketplace → Add Product → Publish.',
+        tags: ['sell', 'listing']
+      },
+      {
+        id: 'farmer-2',
+        question: 'What is Kisan AI?',
+        answer: 'Kisan AI provides crop advice, disease detection, and pricing insights.',
+        tags: ['ai', 'kisan']
+      },
+      {
+        id: 'farmer-3',
+        question: 'How do I receive payments?',
+        answer: 'Payments are credited directly to your registered bank account.',
+        tags: ['payments']
+      }
+    ],
+
+    'buyer': [
+      {
+        id: 'buyer-1',
+        question: 'How do I buy crops?',
+        answer: 'Browse Marketplace → Select product → Place order.',
+        tags: ['buy', 'order']
+      },
+      {
+        id: 'buyer-2',
+        question: 'Can I track product origin?',
+        answer: 'Yes. Each product has blockchain-backed traceability.',
+        tags: ['traceability']
+      },
+      {
+        id: 'buyer-3',
+        question: 'What if the product quality is poor?',
+        answer: 'You can raise a dispute via the Help Center.',
+        tags: ['complaint']
+      }
+    ],
+
+    'admin': [
+      {
+        id: 'admin-1',
+        question: 'How do admins verify farmers?',
+        answer: 'Admins review farmer documents and approve accounts.',
+        tags: ['verification']
+      },
+      {
+        id: 'admin-2',
+        question: 'Can admins block users?',
+        answer: 'Yes. Admins can suspend or block accounts if needed.',
+        tags: ['security']
+      },
+      {
+        id: 'admin-3',
+        question: 'How are disputes handled?',
+        answer: 'Admins review evidence and resolve disputes fairly.',
+        tags: ['disputes']
       }
     ]
   };
 
-  /* ---------------- HELPERS (FIXES TEMPLATE ERRORS) ---------------- */
-
-  get hasResults(): boolean {
-    return Object.keys(this.filteredFaqs).length > 0;
-  }
-
-  getCategoryTitle(key: string): string {
-    return key.replace(/-/g, ' ');
-  }
-
-  getFirstFaqId(): string | null {
-    const categories = Object.keys(this.filteredFaqs);
-    if (!categories.length) return null;
-    return this.filteredFaqs[categories[0]][0]?.id ?? null;
-  }
-
-  /* ---------------- FILTERED DATA ---------------- */
+  /* ---------------- FILTER LOGIC ---------------- */
 
   get filteredFaqs(): Record<string, FAQ[]> {
     const result: Record<string, FAQ[]> = {};
@@ -110,14 +174,14 @@ export class HelpCenterComponent implements OnInit {
     return result;
   }
 
+  get hasResults(): boolean {
+    return Object.keys(this.filteredFaqs).length > 0;
+  }
+
   /* ---------------- ACTIONS ---------------- */
 
   handleSearch(e: Event): void {
     e.preventDefault();
-    const firstId = this.getFirstFaqId();
-    if (firstId) {
-      this.router.navigate([], { fragment: firstId });
-    }
   }
 
   toggleFaq(id: string): void {
@@ -136,6 +200,10 @@ export class HelpCenterComponent implements OnInit {
   clearSearch(): void {
     this.searchQuery = '';
     this.activeCategory = 'all';
-    this.searchInput?.nativeElement.focus();
+    this.searchInput.nativeElement.focus();
+  }
+
+  getCategoryTitle(key: string): string {
+    return key.replace(/-/g, ' ');
   }
 }

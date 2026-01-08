@@ -33,6 +33,12 @@ export const routes: Routes = [
       import('./features/marketplace/marketplace.component')
         .then(m => m.MarketplaceComponent)
   },
+  {
+  path: 'about',   // 👈 ADD HERE
+  loadComponent: () =>
+    import('./pages/about.component')
+      .then(m => m.AboutComponent)
+},
 
   /* =======================
      TRACEABILITY ROUTE
