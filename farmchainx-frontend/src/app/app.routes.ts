@@ -34,14 +34,25 @@ export const routes: Routes = [
         .then(m => m.MarketplaceComponent)
   },
   {
-  path: 'about',   // 👈 ADD HERE
-  loadComponent: () =>
-    import('./pages/about.component')
-      .then(m => m.AboutComponent)
-},
+    path: 'about',
+    loadComponent: () =>
+      import('./pages/about.component')
+        .then(m => m.AboutComponent)
+  },
 
   /* =======================
-     TRACEABILITY ROUTE
+     PROFILE ROUTE ✅ (NEW)
+  ======================= */
+  {
+    path: 'profile',
+    canActivate: [AuthGuard],
+    loadComponent: () =>
+      import('./pages/profile.component')
+        .then(m => m.ProfileComponent)
+  },
+
+  /* =======================
+     TRACEABILITY
   ======================= */
   {
     path: 'trace/:batchId',
@@ -199,7 +210,7 @@ export const routes: Routes = [
   },
 
   /* =======================
-     FALLBACK ROUTE
+     FALLBACK
   ======================= */
   { path: '**', redirectTo: '' }
 ];

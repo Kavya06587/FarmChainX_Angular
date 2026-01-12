@@ -51,6 +51,7 @@ const API = 'http://localhost:8080';
             <p><b>Crop:</b> {{ order?.cropName }} ({{ order?.cropType }})</p>
             <p><b>Farmer:</b> {{ order?.farmerName }} {{ order?.farmerPhone ? '(' + order?.farmerPhone + ')' : '' }}</p>
             <p><b>Distributor:</b> {{ order?.distributorName }} {{ order?.distributorPhone ? '(' + order?.distributorPhone + ')' : '' }}</p>
+            <p><b>Delivery Address:</b> {{ order?.deliveryAddress || 'N/A' }}</p>
           </div>
 
           <!-- META -->
@@ -84,15 +85,18 @@ const API = 'http://localhost:8080';
         <div class="bg-white rounded-2xl w-full max-w-lg p-6">
           <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold">📦 Tracking – {{ trackingOrder?.orderCode }}</h2>
-            <button (click)="trackingOrder = null">X</button>
+            <button (click)="trackingOrder = null" class="text-gray-600 font-bold text-lg">✕</button>
           </div>
 
           <div class="space-y-3">
             <div *ngFor="let item of trackingSteps(trackingOrder)" class="flex gap-3">
-              <div>➡️</div>
+              <div class="text-gray-400 mt-1">➡️</div>
               <div>
                 <p class="font-semibold">{{ item.title }}</p>
-                <p class="text-sm text-gray-500">{{ item.time ? (item.time | date:'short') : 'Pending' }}</p>
+                <p class="text-sm text-gray-500">
+                  {{ item.time ? (item.time | date:'short') : 'Pending' }}
+                  <span *ngIf="item.location"> - <em>{{ item.location }}</em></span>
+                </p>
               </div>
             </div>
           </div>
@@ -140,14 +144,23 @@ export class MyOrdersComponent implements OnInit {
       .subscribe(() => this.fetchOrders());
   }
 
-  trackingSteps(order: any) {
-    return [
-      { title: 'Order Placed', time: order?.createdAt },
-      { title: 'In Warehouse', time: order?.warehouseAt },
-      { title: 'Out for Delivery', time: order?.inTransitAt },
-      { title: 'Delivered', time: order?.deliveredAt },
-    ];
-  }
+  // TRACKING WITH LOCATION
+trackingSteps(order: any) {
+  return [
+    { title: 'Order Placed', time: order?.createdAt, location: order?.orderLocation || order?.deliveryAddress },
+    { title: 'In Warehouse', time: order?.warehouseAt, location: this.formatLocation(order?.warehouseLocation) },
+    { title: 'Out for Delivery', time: order?.inTransitAt, location: this.formatLocation(order?.transitLocation) },
+    { title: 'Delivered', time: order?.deliveredAt, location: order?.deliveryAddress },
+  ];
+}
+
+formatLocation(loc: any): string {
+  if (!loc) return '';
+  if (typeof loc === 'string') return loc;
+  // if loc is an object
+  return [loc.street, loc.city, loc.pincode].filter(Boolean).join(', ');
+}
+
 
   getImageUrl(order: any): string {
     return order?.cropImageUrl?.startsWith('/uploads')

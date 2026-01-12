@@ -12,22 +12,18 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 })
 export class MarketplaceComponent implements OnInit {
 
-  // Products
   products: any[] = [];
   filteredProducts: any[] = [];
   loading = true;
 
-  // Filters
   search = '';
   minPrice: number | null = null;
   maxPrice: number | null = null;
   sortBy = '';
 
-  // Checkout modal
   selectedProduct: any = null;
   checkoutForm!: FormGroup;
 
-  // Cart
   cart: any[] = [];
 
   constructor(
@@ -57,10 +53,15 @@ export class MarketplaceComponent implements OnInit {
   fetchProducts() {
     this.loading = true;
     const BASE_IMAGE_URL = 'http://localhost:8080';
+
     this.http.get<any[]>('http://localhost:8080/api/listings/').subscribe({
       next: data => {
         this.products = (data || [])
-          .filter(l => (l.status === 'ACTIVE' || l.status === 'APPROVED') && l.price > 0 && l.quantity > 0)
+          .filter(l =>
+            (l.status === 'ACTIVE' || l.status === 'APPROVED') &&
+            l.price > 0 &&
+            l.quantity > 0
+          )
           .map(l => ({
             listingId: l.listingId,
             cropName: l.cropName || 'Unknown Crop',
@@ -68,10 +69,18 @@ export class MarketplaceComponent implements OnInit {
             price: Number(l.price),
             quantity: Number(l.quantity),
             qualityGrade: l.qualityGrade || 'N/A',
-            traceUrl: `/trace/${l.batchId}`,
 
-            cropImageUrl: l.cropImageUrl ? `${BASE_IMAGE_URL}${l.cropImageUrl}` : 'assets/placeholder.png'
+            // ✅ LOCATION FIELDS
+            location: l.location || 'Location not available',
+            latitude: l.latitude,
+            longitude: l.longitude,
+
+            traceUrl: `/trace/${l.batchId}`,
+            cropImageUrl: l.cropImageUrl
+              ? `${BASE_IMAGE_URL}${l.cropImageUrl}`
+              : 'assets/placeholder.png'
           }));
+
         this.applyFilters();
         this.loading = false;
       },
@@ -160,4 +169,15 @@ export class MarketplaceComponent implements OnInit {
     alert(`🛒 ${product.cropName} added to cart`);
   }
 
+  // ✅ Google Maps link
+  openMap(p: any) {
+    if (p.latitude && p.longitude) {
+      window.open(
+        `https://www.google.com/maps?q=${p.latitude},${p.longitude}`,
+        '_blank'
+      );
+    } else {
+      alert('Location not available');
+    }
+  }
 }

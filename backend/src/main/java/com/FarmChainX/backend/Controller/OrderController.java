@@ -44,9 +44,10 @@ public class OrderController {
     public Order updateOrderStatus(
             @PathVariable Long orderId,
             @RequestParam OrderStatus status,
-            @RequestParam String distributorId
+            @RequestParam String distributorId,
+            @RequestParam(required = false) String location // new
     ) {
-        return orderService.updateOrderStatus(orderId, status, distributorId);
+        return orderService.updateOrderStatus(orderId, status, distributorId, location);
     }
 
     // -------------------- SET EXPECTED DELIVERY --------------------
@@ -80,7 +81,7 @@ public class OrderController {
     public List<OrderDetailsDTO> getOrdersByDistributorFull(@PathVariable String distributorId) {
         return orderService.getOrdersByDistributorFull(distributorId);
     }
-//    @PutMapping("/{orderId}/cancel")
+    //    @PutMapping("/{orderId}/cancel")
 //    public ResponseEntity<Order> cancelOrder(
 //            @PathVariable Long orderId,
 //            @RequestParam String distributorId,
@@ -96,15 +97,15 @@ public class OrderController {
         return orderService.getOrdersByFarmer(farmerId);
     }
     @PutMapping("/{orderId}/cancel")
-public ResponseEntity<String> cancelOrder(
-        @PathVariable Long orderId,
-        @RequestBody Map<String, String> payload) {
+    public ResponseEntity<String> cancelOrder(
+            @PathVariable Long orderId,
+            @RequestBody Map<String, String> payload) {
 
-    String reason = payload.get("cancelReason");
-    if (reason == null || reason.isBlank())
-        return ResponseEntity.badRequest().body("Cancel reason required");
+        String reason = payload.get("cancelReason");
+        if (reason == null || reason.isBlank())
+            return ResponseEntity.badRequest().body("Cancel reason required");
 
-    orderService.cancelOrder(orderId, reason);
-    return ResponseEntity.ok("Order cancelled");
-}
+        orderService.cancelOrder(orderId, reason);
+        return ResponseEntity.ok("Order cancelled");
+    }
 }

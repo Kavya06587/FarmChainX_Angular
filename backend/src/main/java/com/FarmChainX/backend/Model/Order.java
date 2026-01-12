@@ -46,7 +46,26 @@ public class Order {
     private LocalDateTime inTransitAt;
     private LocalDateTime deliveredAt;
 
-   // @Column(nullable = false)
+    private String warehouseLocation;
+    private String transitLocation;
+
+    public String getWarehouseLocation() {
+        return warehouseLocation;
+    }
+
+    public void setWarehouseLocation(String warehouseLocation) {
+        this.warehouseLocation = warehouseLocation;
+    }
+
+    public String getTransitLocation() {
+        return transitLocation;
+    }
+
+    public void setTransitLocation(String transitLocation) {
+        this.transitLocation = transitLocation;
+    }
+
+    // @Column(nullable = false)
     private Double farmerProfit = 0.0;
 
     //@Column(nullable = false)

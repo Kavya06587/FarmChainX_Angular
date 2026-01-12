@@ -33,6 +33,33 @@ public class OrderDetailsDTO {
     private LocalDateTime warehouseAt;
     private LocalDateTime inTransitAt;
     private LocalDateTime deliveredAt;
+    private String warehouseLocation;
+    private String transitLocation;
+    private String consumerId;
+
+    public String getConsumerId() {
+        return consumerId;
+    }
+
+    public void setConsumerId(String consumerId) {
+        this.consumerId = consumerId;
+    }
+
+    public String getWarehouseLocation() {
+        return warehouseLocation;
+    }
+
+    public void setWarehouseLocation(String warehouseLocation) {
+        this.warehouseLocation = warehouseLocation;
+    }
+
+    public String getTransitLocation() {
+        return transitLocation;
+    }
+
+    public void setTransitLocation(String transitLocation) {
+        this.transitLocation = transitLocation;
+    }
 
     public String getCropImageUrl() {
         return cropImageUrl;

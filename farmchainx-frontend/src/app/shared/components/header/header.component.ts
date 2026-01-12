@@ -98,6 +98,12 @@ export class HeaderComponent implements OnInit {
       this.isProfileOpen = false;
     }
   }
+goToProfile(): void {
+  this.router.navigate(['/profile']);
+  this.isProfileOpen = false;
+}
+
+
 
   getUserInitials(): string {
     if (!this.user?.name) return 'U';
